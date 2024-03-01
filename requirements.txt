@@ -2,3 +2,5 @@ dash==1.0.0
 gunicorn==19.9.0
 pandas==0.23.4
 matplotlib==3.5.3
+dash-core-components>=2.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
+dash-html-components>=2.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
