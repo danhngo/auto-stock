@@ -7,10 +7,23 @@ import pandas as pd
 import requests
 
 
+def truncate_description(description, max_length=60):
+    """Truncate description to a maximum length with ellipsis."""
+    if not description:
+        return 'No description'
+    if len(description) > max_length:
+        return description[:max_length] + '...'
+    return description
+
+
 def get_github_repos(username='danhngo'):
     """
     Fetch repositories for a GitHub user and sort by most active (based on push date).
     Falls back to mock data if GitHub API is unavailable.
+    
+    Note: This implementation does not use authentication, which means it's subject
+    to GitHub's rate limits (60 requests/hour for unauthenticated requests).
+    For production use, consider adding GitHub token authentication.
     """
     try:
         url = f'https://api.github.com/users/{username}/repos'
@@ -33,7 +46,7 @@ def get_github_repos(username='danhngo'):
             for repo in repos:
                 repo_data.append({
                     'Name': repo['name'],
-                    'Description': (repo['description'] or 'No description')[:60] + '...' if repo['description'] and len(repo['description']) > 60 else (repo['description'] or 'No description'),
+                    'Description': truncate_description(repo.get('description')),
                     'Stars': repo['stargazers_count'],
                     'Forks': repo['forks_count'],
                     'Language': repo['language'] or 'N/A',
@@ -45,8 +58,13 @@ def get_github_repos(username='danhngo'):
         else:
             # Return mock data on error
             return get_mock_repos()
+    except (requests.RequestException, requests.Timeout, ConnectionError) as e:
+        # Log the error (in production, use proper logging)
+        print(f"Failed to fetch GitHub repos: {e}")
+        return get_mock_repos()
     except Exception as e:
-        # Return mock data on exception
+        # Catch any other unexpected errors
+        print(f"Unexpected error fetching GitHub repos: {e}")
         return get_mock_repos()
 
 
@@ -101,9 +119,23 @@ def get_mock_repos():
     return pd.DataFrame(mock_data)
 
 
-def create_layout(app):
+# Default GitHub username - can be overridden via environment variable
+DEFAULT_GITHUB_USER = 'danhngo'
+
+
+def create_layout(app, username=None):
+    """
+    Create the layout for the GitHub repos page.
+    
+    Args:
+        app: The Dash app instance
+        username: GitHub username to fetch repos for (defaults to DEFAULT_GITHUB_USER)
+    """
+    if username is None:
+        username = DEFAULT_GITHUB_USER
+    
     # Fetch GitHub repos
-    df_repos = get_github_repos('danhngo')
+    df_repos = get_github_repos(username)
     
     return html.Div(
         [
@@ -118,7 +150,7 @@ def create_layout(app):
                                 [
                                     html.H6("Most Active GitHub Repositories", className="subtitle padded"),
                                     html.P(
-                                        f"Showing repositories for user 'danhngo' sorted by most recent activity ({len(df_repos)} repos)",
+                                        f"Showing repositories for user '{username}' sorted by most recent activity ({len(df_repos)} repos)",
                                         style={"color": "#7a7a7a"}
                                     ),
                                     html.Div(
