@@ -15,6 +15,7 @@ from pages import (
     overview,
     distributions,
     newsReviews,
+    GithubRepos,
 )
 app = dash.Dash(
     __name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}],
@@ -46,6 +47,8 @@ def display_page(pathname):
         return distributions.create_layout(app)
     elif pathname == "/dash-financial-report/news-and-reviews":
         return newsReviews.create_layout(app)
+    elif pathname == "/dash-financial-report/github-repos":
+        return GithubRepos.create_layout(app)
     elif pathname == "/dash-financial-report/full-view":
         return (
             overview.create_layout(app),
@@ -54,6 +57,7 @@ def display_page(pathname):
             Report.create_layout(app),
             distributions.create_layout(app),
             newsReviews.create_layout(app),
+            GithubRepos.create_layout(app),
         )
     else:
         return overview.create_layout(app)

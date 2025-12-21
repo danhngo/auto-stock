@@ -133,6 +133,11 @@ def get_menu():
                 href="/dash-financial-report/news-and-reviews",
                 className="tab",
             ),
+            dcc.Link(
+                "GitHub Repos",
+                href="/dash-financial-report/github-repos",
+                className="tab",
+            ),
         ],
         className="row all-tabs",
     )

@@ -44,6 +44,16 @@ python3 app.py
 
 This is an interactive, multi-page report which displays a variety of tables, bullet points, and Plotly interactive plots in a report format. The app incorporates custom local and external CSS to display distinct pages for PDF print.
 
+### New Feature: GitHub Repositories
+
+The application now includes a page to display the most active GitHub repositories for a user. This page:
+- Fetches repository data from the GitHub API
+- Sorts repositories by most recent activity (last push date)
+- Displays key metrics: stars, forks, programming language, and last update date
+- Falls back to mock data when the GitHub API is unavailable
+
+To access this feature, navigate to the "GitHub Repos" tab in the application menu.
+
 ## Built With
 
 - [Dash](https://dash.plot.ly/) - Main server and interactive components
